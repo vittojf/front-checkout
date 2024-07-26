@@ -1,0 +1,14 @@
+{
+  "payment_date": "00000",
+  "info_user": {},
+  "user_id": "xxxx",
+  "payment_stripe_record": {},
+  "products": [
+    { "name": "PARTIDO VENEZUELA VS COLOMBIA ", "id": "vzlavscol", "price": 50 }
+  ],
+  "location": {
+    "timezone": "America/Los_Angeles",
+    "region": "California",
+    "country": "US"
+  }
+}
