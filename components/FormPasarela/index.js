@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 
 import { BillPayment } from "./Bill/BillPayment";
-import { usePayment } from "@/hooks/usePayment";
+
 import { Button, Card, CardBody, CardHeader, Spinner } from "@nextui-org/react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
