@@ -8,9 +8,10 @@ import {
   CardHeader,
   Input,
 } from "@nextui-org/react";
+import axios from "axios";
 import React, { useEffect } from "react";
 
-export const FormPayment = ({ setLoading, setSuccess,setMessage }) => {
+export const FormPayment = ({ setLoading, setSuccess, setMessage,setResult,result }) => {
   const {
     dataPaymentForm,
     handleOnChange,
@@ -20,9 +21,11 @@ export const FormPayment = ({ setLoading, setSuccess,setMessage }) => {
     saveData,
     loading,
     success,
-    saveDataError
+    saveDataError,
+    bill
   } = usePayment();
 
+ 
   const itemsForm = [
     {
       name: "Nombre del titular de la tarjeta*",
@@ -46,8 +49,9 @@ export const FormPayment = ({ setLoading, setSuccess,setMessage }) => {
   ];
 
   return (
-    <section className="m-auto">
-      <Card className="w-[700px] h-full">
+    <section className="m-auto order-2 2xl:order-1">
+      
+      <Card className="max-w-[700px] h-full">
         <CardHeader>Pay card</CardHeader>
         <CardBody className="flex flex-wrap flex-row gap-4">
           {itemsForm
@@ -106,11 +110,16 @@ export const FormPayment = ({ setLoading, setSuccess,setMessage }) => {
           </div>
         </CardBody>
         <CardFooter className="grid grid-cols-1  gap-5">
+        {result!==''&&<Card className=" border border-dashed text-center rounded-lg mb-10    " shadow="none">
+        <p>{result}</p>
+        <p>Intentar nuevamente</p>
+        </Card>}
           <Button
             variant="bordered"
             onPress={() => {
               console.log("Button clicked");
-              saveData(setSuccess, setLoading,setMessage);
+              // test();
+              saveData(setSuccess, setLoading, setMessage,setResult);
             }}
             className="w-full"
             size="lg"
@@ -120,7 +129,8 @@ export const FormPayment = ({ setLoading, setSuccess,setMessage }) => {
           <Button
             onPress={() => {
               console.log("Button clicked");
-              saveDataError(setSuccess, setLoading,setMessage);
+              // test();
+              saveDataError(setSuccess, setLoading, setMessage,setResult);
             }}
             className="w-full"
             size="lg"

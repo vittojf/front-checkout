@@ -4,8 +4,9 @@ import { useState } from "react";
 export function usePayment() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
+  const [messageResult, setMessageResult] = useState("");
   const [dataPaymentForm, setDataPaymentForm] = useState({
     name: "",
     cardNumber: "",
@@ -13,14 +14,8 @@ export function usePayment() {
     cvc: "",
   });
   const [bill] = useState({
-    products: [{ name: "PARTIDO VENEZUELA VS COLOMBIA ", id:"vzlavscol",price: 50 }],
+    products: [{ name: "BayernVsArsenal", id: "BayernVsArsenal", price: 50 }],
   });
-
-
-  
-
-
-
 
   const handleOnChange = (value, key) => {
     if (key === "cardNumber") {
@@ -32,7 +27,7 @@ export function usePayment() {
     }));
     setErrors((e) => ({
       ...e,
-      [key]: '',
+      [key]: "",
     }));
   };
 
@@ -74,68 +69,104 @@ export function usePayment() {
   const validateForm = () => {
     const newErrors = {};
     if (!dataPaymentForm.name) newErrors.name = "Nombre es requerido";
-    if (!dataPaymentForm.cardNumber) newErrors.cardNumber = "Número de tarjeta es requerido";
-    if (dataPaymentForm.cardNumber.length < 16) newErrors.cardNumber = "Número de tarjeta debe tener 16 dígitos";
-    if (!dataPaymentForm.expDate) newErrors.expDate = "Fecha de vencimiento es requerida";
+    if (!dataPaymentForm.cardNumber)
+      newErrors.cardNumber = "Número de tarjeta es requerido";
+    if (dataPaymentForm.cardNumber.length < 16)
+      newErrors.cardNumber = "Número de tarjeta debe tener 16 dígitos";
+    if (!dataPaymentForm.expDate)
+      newErrors.expDate = "Fecha de vencimiento es requerida";
     if (!dataPaymentForm.cvc) newErrors.cvc = "CVC es requerido";
-    if (dataPaymentForm.cvc.length < 3) newErrors.cvc = "CVC debe tener 3 dígitos";
+    if (dataPaymentForm.cvc.length < 3)
+      newErrors.cvc = "CVC debe tener 3 dígitos";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const saveData = async (updateSuccess,updateLoading,updateMessage) => {
+  const saveData = async (updateSuccess, updateLoading, updateMessage,updateResult) => {
     if (!validateForm()) {
       console.log("Validation failed", errors);
       return;
     }
 
     console.log("Validation passed, processing payment...");
-    updateLoading(true)
+    updateLoading(true);
     setLoading(true);
-    setMessage('');
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate a delay of 2 seconds
+    setMessage("");
+    // await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate a delay of 2 seconds
 
-axios.post('http://localhost:50001/api/payment/success',{})
-    
-    setSuccess(true);
-    updateSuccess(true)
-    updateLoading(false)
-    setLoading(false);
+    try {
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const body = {
+        payment_date: new Date(),
+        payment_stripe_record: {},
+        products: bill.products,
+        location: {
+          timeZone,
+        },
+      };
+      const res = await axios.post("/api/checkout", JSON.stringify(body));
 
-    setMessage('00001');
-    updateMessage('00001')
-    console.log("Payment processed successfully");
+      if (res.data.isSuccess) {
+        setSuccess(true);
+        updateSuccess(true);
+        updateLoading(false);
+        setLoading(false);
+        
+        setMessage("00001");
+        updateMessage("00001");
+      } else {
+        setSuccess(false);
+        updateSuccess(false);
+        updateLoading(false);
+        setLoading(false);
+  
+        updateResult(res.data.message)
+        setMessage("00005");
+        updateMessage("00005");
+        console.log("Payment  Error");
+      }
+    } catch (error) {
+      console.log(error);
+
+      setSuccess(false);
+      updateSuccess(false);
+      updateLoading(false);
+      setLoading(false);
+      
+      setMessage("00005");
+      updateMessage("00005");
+      console.log("Payment  Error");
+    }
   };
-  const saveDataError = async (updateSuccess,updateLoading,updateMessage) => {
+  const saveDataError = async (updateSuccess, updateLoading, updateMessage) => {
     if (!validateForm()) {
       console.log("Validation failed", errors);
       return;
     }
 
     console.log("Validation passed, processing payment...");
-    updateLoading(true)
+    updateLoading(true);
     setLoading(true);
-    setMessage('');
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate a delay of 2 seconds
+    setMessage("");
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate a delay of 2 seconds
     setSuccess(true);
-    updateSuccess(true)
-    updateLoading(false)
+    updateSuccess(true);
+    updateLoading(false);
     setLoading(false);
 
-    setMessage('00005');
-    updateMessage('00005')
+    setMessage("00005");
+    updateMessage("00005");
     console.log("Payment processed successfully");
   };
 
-
-  const restart=(updateSuccess,updateLoading,updateMessage)=>{
-    updateMessage('')
-    updateSuccess(false)
-    updateLoading(false)
+  const restart = (updateSuccess, updateLoading, updateMessage) => {
+    setMessageResult("")
+    updateMessage("");
+    updateSuccess(false);
+    updateLoading(false);
     setLoading(false);
     setSuccess(true);
-
-  }
+  };
 
   return {
     dataPaymentForm,
@@ -146,9 +177,10 @@ axios.post('http://localhost:50001/api/payment/success',{})
     success,
     loading,
     message,
+    messageResult,
     errors,
     saveData,
     saveDataError,
-    restart
+    restart,
   };
 }

@@ -16,12 +16,6 @@
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(179, 179, 179);
-  height: 100vh;
-  
-}
 
 @layer utilities {
   .text-balance {

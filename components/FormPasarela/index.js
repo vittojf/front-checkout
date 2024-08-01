@@ -12,11 +12,12 @@ export default function StripePayment() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [message, setMessage] = useState("");
-  const { bill,restart } = usePayment();
+  const [result, setResult] = useState("");
+  const { bill, restart } = usePayment();
 
   return (
     <React.Fragment>
-      <section>
+      <section className=" pb-10 ">
         <AnimatePresence>
           {!loading && !success && (
             <motion.article
@@ -24,14 +25,18 @@ export default function StripePayment() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="w-full grid transition-all grid-cols-2 justify-center items-center px-28 h-full "
+              className=" grid transition-all grid-cols-1      2xl:grid-cols-2 justify-center items-center px-2 lg:px-28 h-full  gap-y-5 m-auto"
             >
               <FormPayment
+              result={result}
+              setResult={setResult}
                 setLoading={setLoading}
                 setMessage={setMessage}
                 setSuccess={setSuccess}
               />
               <BillPayment bill={bill} />
+
+           
             </motion.article>
           )}
         </AnimatePresence>
@@ -54,6 +59,7 @@ export default function StripePayment() {
             </motion.article>
           )}
         </AnimatePresence>
+
         <AnimatePresence>
           {success && (
             <motion.article
@@ -67,6 +73,7 @@ export default function StripePayment() {
                 <CardHeader></CardHeader>
                 <CardBody className="flex justify-center items-center">
                   <Image
+                    alt="succs"
                     src={message === "00005" ? "/delete.png" : "/check.png"}
                     className="w-[150px]"
                     width={512}
@@ -82,10 +89,16 @@ export default function StripePayment() {
                     <>
                       <h3 className="text-xl font-bold mt-10">
                         {" "}
-                        Error al procesar. 
+                        Error al procesar.
                       </h3>
                       <p>CODIGO {message} FONDO INSUFICIENTE</p>
-                      <Button onPress={()=>restart(setSuccess,setLoading,setMessage)}>Reintentar</Button>
+                      <Button
+                        onPress={() =>
+                          restart(setSuccess, setLoading, setMessage)
+                        }
+                      >
+                        Reintentar
+                      </Button>
                     </>
                   )}
                 </CardBody>

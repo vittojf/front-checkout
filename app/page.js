@@ -1,28 +1,15 @@
-"use client";
-import { useUser } from "@/context/userContext";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import StripePayment from "@/components/FormPasarela";
+import { cookies } from "next/headers";
 
 export default function Home() {
-  const  router = useRouter();
-  const { setUser, user } = useUser();
-
-  useEffect(() => {
-    if (user.email === "" && JSON.stringify(localStorage.getItem("key"))) {
-      setUser({
-        email: JSON.stringify(localStorage.getItem("email")),
-        password: JSON.stringify(localStorage.getItem("password")),
-      });
-      router.push('/payment')
-    }else{
-      router.push('/login')
-
-    }
-  }, [user]);
-
   return (
     <>
-
+      <header className="w-full text-center py-8 justify-center  items-center mb-[10px] 2xl:mb-[200px]">
+     
+      </header>
+      <main className="h-auto ">
+        <StripePayment></StripePayment>
+      </main>
     </>
   );
 }
