@@ -1,12 +1,10 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import {  useState } from "react";
 
 import { Input, Button, Card, CardBody } from "@nextui-org/react"; // Asegúrate de importar tus componentes correctamente
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useUser } from "@/context/userContext";
+
 import { useLogin } from "@/hooks/useLogin";
-import { getCookie } from "cookies-next";
 
 export default function LoginPage() {
   const [isVisible, setIsVisible] = useState(false);

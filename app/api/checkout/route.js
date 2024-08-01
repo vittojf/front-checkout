@@ -3,8 +3,7 @@ import { verify } from "jsonwebtoken";
 import { NextResponse } from "next/server";
 
 export async function POST(req, res) {
-  const { payment_date, payment_stripe_record, products, location } =
-    await req.json();
+  const { payment_date, payment_stripe_record, products, location } =await req.json();
 
   const session = req.cookies.get("session");
 

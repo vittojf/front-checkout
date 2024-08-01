@@ -8,13 +8,17 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FormPayment } from "./FormPayment/FormPayment";
 
-export default function StripePayment() {
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [message, setMessage] = useState("");
-  const [result, setResult] = useState("");
-  const { bill, restart } = usePayment();
-
+export default function StripePayment({
+  loading,
+  success,
+  message,
+  result,
+  formatExpDate,
+  bill,
+  saveData,
+  saveDataError,
+  restart
+}) {
   return (
     <React.Fragment>
       <section className=" pb-10 ">
@@ -28,15 +32,12 @@ export default function StripePayment() {
               className=" grid transition-all grid-cols-1      2xl:grid-cols-2 justify-center items-center px-2 lg:px-28 h-full  gap-y-5 m-auto"
             >
               <FormPayment
-              result={result}
-              setResult={setResult}
-                setLoading={setLoading}
-                setMessage={setMessage}
-                setSuccess={setSuccess}
+                saveDataError={saveDataError}
+                saveData={saveData}
+                formatExpDate={formatExpDate}
+                result={result}
               />
               <BillPayment bill={bill} />
-
-           
             </motion.article>
           )}
         </AnimatePresence>
@@ -92,13 +93,7 @@ export default function StripePayment() {
                         Error al procesar.
                       </h3>
                       <p>CODIGO {message} FONDO INSUFICIENTE</p>
-                      <Button
-                        onPress={() =>
-                          restart(setSuccess, setLoading, setMessage)
-                        }
-                      >
-                        Reintentar
-                      </Button>
+                      <Button onPress={ restart}>Reintentar</Button>
                     </>
                   )}
                 </CardBody>

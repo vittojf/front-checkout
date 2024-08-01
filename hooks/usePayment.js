@@ -5,31 +5,11 @@ export function usePayment() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [errors, setErrors] = useState({});
   const [messageResult, setMessageResult] = useState("");
-  const [dataPaymentForm, setDataPaymentForm] = useState({
-    name: "",
-    cardNumber: "",
-    expDate: "",
-    cvc: "",
-  });
-  const [bill] = useState({
-    products: [{ name: "BayernVsArsenal", id: "BayernVsArsenal", price: 50 }],
-  });
 
-  const handleOnChange = (value, key) => {
-    if (key === "cardNumber") {
-      value = value.replace(/\D/g, ""); // Remove non-digit characters
-    }
-    setDataPaymentForm((e) => ({
-      ...e,
-      [key]: value,
-    }));
-    setErrors((e) => ({
-      ...e,
-      [key]: "",
-    }));
-  };
+  const [bill] = useState({
+    products: [{ name: "BayernVsArsenal", id: "xx", price: 50 }],
+  });
 
   const formatExpDate = (value) => {
     const cleanedValue = value.replace(/\D/g, "");
@@ -56,43 +36,11 @@ export function usePayment() {
     return formattedValue.slice(0, 5);
   };
 
-  const handleExpDateChange = (e) => {
-    const formattedValue = formatExpDate(e.target.value);
-    handleOnChange(formattedValue, "expDate");
-  };
-
-  const handleCVCChange = (e) => {
-    const value = e.target.value.replace(/\D/g, "").slice(0, 3);
-    handleOnChange(value, "cvc");
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!dataPaymentForm.name) newErrors.name = "Nombre es requerido";
-    if (!dataPaymentForm.cardNumber)
-      newErrors.cardNumber = "Número de tarjeta es requerido";
-    if (dataPaymentForm.cardNumber.length < 16)
-      newErrors.cardNumber = "Número de tarjeta debe tener 16 dígitos";
-    if (!dataPaymentForm.expDate)
-      newErrors.expDate = "Fecha de vencimiento es requerida";
-    if (!dataPaymentForm.cvc) newErrors.cvc = "CVC es requerido";
-    if (dataPaymentForm.cvc.length < 3)
-      newErrors.cvc = "CVC debe tener 3 dígitos";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const saveData = async (updateSuccess, updateLoading, updateMessage,updateResult) => {
-    if (!validateForm()) {
-      console.log("Validation failed", errors);
-      return;
-    }
-
+  const saveData = async (dataForm) => {
+    console.log(dataForm);
     console.log("Validation passed, processing payment...");
-    updateLoading(true);
     setLoading(true);
     setMessage("");
-    // await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate a delay of 2 seconds
 
     try {
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -108,79 +56,64 @@ export function usePayment() {
 
       if (res.data.isSuccess) {
         setSuccess(true);
-        updateSuccess(true);
-        updateLoading(false);
         setLoading(false);
-        
         setMessage("00001");
-        updateMessage("00001");
       } else {
         setSuccess(false);
-        updateSuccess(false);
-        updateLoading(false);
         setLoading(false);
-  
-        updateResult(res.data.message)
+        setMessageResult(res.data.message);
         setMessage("00005");
-        updateMessage("00005");
+
         console.log("Payment  Error");
       }
     } catch (error) {
       console.log(error);
 
       setSuccess(false);
-      updateSuccess(false);
-      updateLoading(false);
+
       setLoading(false);
-      
+
       setMessage("00005");
-      updateMessage("00005");
+      setMessageResult("Error al procesar pago. Intentar de neuvo");
       console.log("Payment  Error");
     }
   };
-  const saveDataError = async (updateSuccess, updateLoading, updateMessage) => {
-    if (!validateForm()) {
-      console.log("Validation failed", errors);
-      return;
-    }
+  const saveDataError = async () => {
+
 
     console.log("Validation passed, processing payment...");
-    updateLoading(true);
+
     setLoading(true);
     setMessage("");
     await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate a delay of 2 seconds
     setSuccess(true);
-    updateSuccess(true);
-    updateLoading(false);
+
     setLoading(false);
 
     setMessage("00005");
-    updateMessage("00005");
+
     console.log("Payment processed successfully");
   };
 
-  const restart = (updateSuccess, updateLoading, updateMessage) => {
-    setMessageResult("")
-    updateMessage("");
-    updateSuccess(false);
-    updateLoading(false);
+  const restart = () => {
+
     setLoading(false);
-    setSuccess(true);
+    setSuccess(false);
+    setMessage("");
+
+    setMessageResult("");
   };
 
   return {
-    dataPaymentForm,
-    handleOnChange,
-    handleExpDateChange,
-    handleCVCChange,
     bill,
     success,
     loading,
     message,
     messageResult,
-    errors,
+
     saveData,
     saveDataError,
     restart,
+    formatExpDate,
   };
 }
